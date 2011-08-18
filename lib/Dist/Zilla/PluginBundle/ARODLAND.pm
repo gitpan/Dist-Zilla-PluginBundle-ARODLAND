@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::ARODLAND::AUTHORITY = 'cpan:ARODLAND';
 }
 {
-  $Dist::Zilla::PluginBundle::ARODLAND::VERSION = '0.01';
+  $Dist::Zilla::PluginBundle::ARODLAND::VERSION = '0.02';
 }
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
 
@@ -80,7 +80,7 @@ sub bundle_config {
   });
 
   my $prefix = 'Dist::Zilla::Plugin::';
-  my @extra = map {[ "$section->{name}/$_->[0]" => "$prefix$_->[0]" => $_->[1] ]}
+  push @plugins, map {[ "$section->{name}/$_->[0]" => "$prefix$_->[0]" => $_->[1] ]}
   (
     ($no_a_pre
       ? ()
@@ -118,8 +118,6 @@ sub bundle_config {
     ],
   );
 
-  push @plugins, @extra;
-
   given ($nextversion) {
     when ('git') {
       push @plugins, [ "$section->{name}/Git::NextVersion", "Dist::Zilla::Plugin::Git::NextVersion",
@@ -155,6 +153,12 @@ sub bundle_config {
           ? (tag_message => $tag_message)
           : ()
         ),
+        allow_dirty => 'dist.ini',
+        allow_dirty => 'README',
+        allow_dirty => 'Changes',
+        changelog => 'Changes',
+        commit_msg => 'Release v%v%n%n%c',
+        push_to => 'origin',
       },
   });
 
@@ -173,7 +177,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 DESCRIPTION
 
@@ -234,6 +238,12 @@ It's equvalent to
     [AutoVersion] ;; if nextversion is set to 'autoversion'
 
     [@Git]
+    allow_dirty = dist.ini
+    allow_dirty = README
+    allow_dirty = Changes
+    changelog = Changes
+    commit_msg = Release v%v%n%n%c
+    push_to = origin
 
 =head1 AUTHOR
 

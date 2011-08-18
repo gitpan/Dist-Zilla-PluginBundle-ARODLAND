@@ -51,7 +51,7 @@
          "web" : "http://github.com/arodland/Dist-Zilla-PluginBundle-ARODLAND"
       }
    },
-   "version" : "0.01",
+   "version" : "0.02",
    "x_authority" : "cpan:ARODLAND"
 }
 
