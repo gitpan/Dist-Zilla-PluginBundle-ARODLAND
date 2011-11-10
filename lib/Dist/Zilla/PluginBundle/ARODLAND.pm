@@ -1,11 +1,7 @@
 package Dist::Zilla::PluginBundle::ARODLAND;
-BEGIN {
-  $Dist::Zilla::PluginBundle::ARODLAND::AUTHORITY = 'cpan:ARODLAND';
-}
-{
-  $Dist::Zilla::PluginBundle::ARODLAND::VERSION = '0.02';
-}
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
+our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
+our $VERSION = '0.03'; # VERSION
 
 use 5.10.0;
 use Moose;
@@ -17,6 +13,8 @@ use Dist::Zilla::Plugin::Authority;
 use Dist::Zilla::Plugin::MetaNoIndex;
 use Dist::Zilla::Plugin::AutoVersion;
 use Dist::Zilla::Plugin::Git::NextVersion;
+#use Dist::Zilla::Plugin::CheckChangesHasContent;
+use Dist::Zilla::Plugin::OurPkgVersion;
 
 sub bundle_config {
   my ($self, $section) = @_;
@@ -26,19 +24,22 @@ sub bundle_config {
   my $dist = $config->{dist} // die "You must supply a dist name\n";
   my $github_user = $config->{github_user} // "arodland";
 
-  my $authority = $config->{authority} // "cpan:ARODLAND";
+  my $authority = $config->{authority};
   my $bugtracker = $config->{bugtracker} // "rt";
   my $homepage = $config->{homepage};
   my $repository_url = $config->{repository_url};
   my $repository_web = $config->{repository_web};
 
   my $no_a_pre = $config->{no_AutoPrereqs} // 0;
+  my $no_makemaker = $config->{no_MakeMaker} // 0;
   my $nextrelease_format = $config->{nextrelease_format} // "Version %v: %{yyyy-MM-dd}d";
 
   my $nextversion = $config->{nextversion} // "git"; # git, autoversion, manual
   my $tag_message = $config->{git_tag_message};
   my $version_regexp = $config->{git_version_regexp};
   my $autoversion_major = $config->{autoversion_major};
+
+  my $compat = $config->{compat} || $VERSION;
 
   my ($tracker, $tracker_mailto, $webpage, $repo_url, $repo_web);
 
@@ -79,6 +80,10 @@ sub bundle_config {
       payload => { },
   });
 
+  if ($no_makemaker) {
+    @plugins = grep { $_->[1] ne 'Dist::Zilla::Plugin::MakeMaker' } @plugins;
+  }
+
   my $prefix = 'Dist::Zilla::Plugin::';
   push @plugins, map {[ "$section->{name}/$_->[0]" => "$prefix$_->[0]" => $_->[1] ]}
   (
@@ -86,8 +91,10 @@ sub bundle_config {
       ? ()
       : ([ AutoPrereqs => { } ])
     ),
-    [ PkgVersion => { } ],
-    [ MetaJSON => { } ],
+    ($compat <= 0.02
+      ? ([ PkgVersion => { } ])
+      : ([ OurPkgVersion => { } ])
+    ),
     [
       MetaNoIndex => {
         # Ignore these if they're there
@@ -107,8 +114,16 @@ sub bundle_config {
     ],
     [
       Authority => {
-        authority => $authority,
+        (defined $authority
+          ? (authority => $authority)
+          : ()
+        ),
         do_metadata => 1,
+        do_munging => 1,
+        ($compat <= 0.02
+          ? ()
+          : (locate_comment => 1)
+        ),
       }
     ],
     [
@@ -116,6 +131,7 @@ sub bundle_config {
         format => $nextrelease_format,
       }
     ],
+#    [ CheckChangesHasContent => { } ],
   );
 
   given ($nextversion) {
@@ -125,7 +141,7 @@ sub bundle_config {
           first_version => '0.01',
           ( $version_regexp
             ? (version_regexp => $version_regexp)
-            : (version_regexp => '^v(\d.*)$')
+            : (version_regexp => '^(\d.*)$')
           ),
         }
       ];
@@ -177,7 +193,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 DESCRIPTION
 
@@ -196,7 +212,7 @@ This is the plugin bundle that ARODLAND uses. Use it as:
     repository = http://git.myawesomeproject.com/coolstuff.git
     ;; disable certain features so you can do it better on your own
     no_AutoPrereqs = 1
-    ;; cpan:ARODLAND is the default AUTHORITY
+    ;; defaults to the username from your [%PAUSE] or ~/.pause
     authority = cpan:ARODLAND
 
 It's equvalent to
@@ -204,7 +220,7 @@ It's equvalent to
     [@Basic]
     
     [AutoPrereqs] ;; Unless no_AutoPrereqs is set
-    [PkgVersion]
+    [OurPkgVersion]
     [MetaJSON]
     
     [MetaNoIndex]
@@ -227,11 +243,15 @@ It's equvalent to
     license    = http://dev.perl.org/licenses/ 
     
     [Authority]
-    authority = cpan:ARODLAND
+    authority = cpan:YOURNAME ; if provided
     do_metadata = 1
+    do_munging = 1
+    locate_comment = 1
     
     [NextRelease]
     format = Version %v: %{yyyy-MM-dd}d
+
+    [CheckChangesHasContent]
 
     [Git::NextVersion] ;; if nextversion is set to 'git'
     
