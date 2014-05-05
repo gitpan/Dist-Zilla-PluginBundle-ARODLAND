@@ -1,9 +1,11 @@
 package Dist::Zilla::PluginBundle::ARODLAND;
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 use 5.10.0;
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
+
 use Moose;
 with 'Dist::Zilla::Role::PluginBundle';
 
@@ -84,6 +86,8 @@ sub bundle_config {
     @plugins = grep { $_->[1] ne 'Dist::Zilla::Plugin::MakeMaker' } @plugins;
   }
 
+  my @no_index_dirs = grep { -d $_ } qw( inc t xt utils example examples );
+
   my $prefix = 'Dist::Zilla::Plugin::';
   push @plugins, map {[ "$section->{name}/$_->[0]" => "$prefix$_->[0]" => $_->[1] ]}
   (
@@ -95,12 +99,10 @@ sub bundle_config {
       ? ([ PkgVersion => { } ])
       : ([ OurPkgVersion => { } ])
     ),
-    [
-      MetaNoIndex => {
-        # Ignore these if they're there
-        directory => [ map { -d $_ ? $_ : () } qw( inc t xt utils example examples ) ],
-      }
-    ],
+    (@no_index_dirs
+      ? ([ MetaNoIndex => { directory => [ @no_index_dirs ] } ])
+      : ()
+    ),
     [
       MetaResources => {
         homepage => $webpage,
@@ -183,9 +185,11 @@ sub bundle_config {
 
 __PACKAGE__->meta->make_immutable;
 
-
 __END__
+
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -193,7 +197,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 DESCRIPTION
 
@@ -271,10 +275,9 @@ Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Andrew Rodland.
+This software is copyright (c) 2014 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

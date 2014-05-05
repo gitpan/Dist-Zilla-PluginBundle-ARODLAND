@@ -6,13 +6,15 @@ build_requires: {}
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300003, CPAN::Meta::Converter version 2.110930001'
+generated_by: 'Dist::Zilla version 5.015, CPAN::Meta::Converter version 2.141170'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: Dist-Zilla-PluginBundle-ARODLAND
-no_index: {}
+no_index:
+  directory:
+    - t
 requires:
   Dist::Zilla: 1
   Dist::Zilla::Plugin::Authority: 0
@@ -24,11 +26,12 @@ requires:
   Dist::Zilla::PluginBundle::Git: 0
   Dist::Zilla::Role::PluginBundle: 0
   Moose: 0
-  perl: 5.10.0
+  if: 0
+  perl: v5.10.0
 resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-PluginBundle-ARODLAND
   homepage: http://metacpan.org/release/Dist-Zilla-PluginBundle-ARODLAND
   license: http://dev.perl.org/licenses/
   repository: git://github.com/arodland/Dist-Zilla-PluginBundle-ARODLAND.git
-version: 0.03
+version: 0.04
 x_authority: cpan:ARODLAND
