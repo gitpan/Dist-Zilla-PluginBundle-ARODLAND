@@ -1,7 +1,7 @@
 package Dist::Zilla::PluginBundle::ARODLAND;
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
-our $VERSION = '0.04'; # VERSION
+our $VERSION = '0.05'; # VERSION
 
 use 5.10.0;
 no if $] >= 5.017011, warnings => 'experimental::smartmatch';
@@ -86,6 +86,8 @@ sub bundle_config {
     @plugins = grep { $_->[1] ne 'Dist::Zilla::Plugin::MakeMaker' } @plugins;
   }
 
+  @plugins = grep { $_->[1] ne 'Dist::Zilla::Plugin::GatherDir' } @plugins;
+
   my @no_index_dirs = grep { -d $_ } qw( inc t xt utils example examples );
 
   my $prefix = 'Dist::Zilla::Plugin::';
@@ -131,6 +133,19 @@ sub bundle_config {
     [
       NextRelease => {
         format => $nextrelease_format,
+      }
+    ],
+    [
+      ReadmeFromPod => { }
+    ],
+    [
+      CopyFilesFromBuild => {
+        copy => 'README',
+      }
+    ],
+    [
+      GatherDir => {
+        exclude_filename => 'README'
       }
     ],
 #    [ CheckChangesHasContent => { } ],
@@ -197,7 +212,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 DESCRIPTION
 
