@@ -32,5 +32,5 @@ resources:
   homepage: http://metacpan.org/release/Dist-Zilla-PluginBundle-ARODLAND
   license: http://dev.perl.org/licenses/
   repository: git://github.com/arodland/Dist-Zilla-PluginBundle-ARODLAND.git
-version: '0.06'
+version: '0.07'
 x_authority: cpan:ARODLAND

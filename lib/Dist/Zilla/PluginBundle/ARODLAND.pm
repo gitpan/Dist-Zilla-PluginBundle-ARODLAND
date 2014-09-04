@@ -1,12 +1,12 @@
 package Dist::Zilla::PluginBundle::ARODLAND;
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 use 5.10.0;
+use Moose;
 no if $] >= 5.017011, warnings => 'experimental::smartmatch';
 
-use Moose;
 with 'Dist::Zilla::Role::PluginBundle';
 
 use Dist::Zilla::PluginBundle::Basic;
@@ -188,9 +188,7 @@ sub bundle_config {
           ? (tag_message => $tag_message)
           : ()
         ),
-        allow_dirty => 'dist.ini',
-        allow_dirty => 'README',
-        allow_dirty => 'Changes',
+        allow_dirty => ['dist.ini', 'README', 'Changes'],
         changelog => 'Changes',
         commit_msg => 'Release v%v%n%n%c',
         push_to => 'origin',
@@ -214,7 +212,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 DESCRIPTION
 
