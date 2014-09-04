@@ -1,7 +1,7 @@
 package Dist::Zilla::PluginBundle::ARODLAND;
 # ABSTRACT: Use L<Dist::Zilla> like ARODLAND does
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
-our $VERSION = '0.05'; # VERSION
+our $VERSION = '0.06'; # VERSION
 
 use 5.10.0;
 no if $] >= 5.017011, warnings => 'experimental::smartmatch';
@@ -17,6 +17,8 @@ use Dist::Zilla::Plugin::AutoVersion;
 use Dist::Zilla::Plugin::Git::NextVersion;
 #use Dist::Zilla::Plugin::CheckChangesHasContent;
 use Dist::Zilla::Plugin::OurPkgVersion;
+use Dist::Zilla::Plugin::CopyFilesFromBuild;
+use Dist::Zilla::Plugin::ReadmeFromPod;
 
 sub bundle_config {
   my ($self, $section) = @_;
@@ -212,7 +214,7 @@ Dist::Zilla::PluginBundle::ARODLAND - Use L<Dist::Zilla> like ARODLAND does
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 DESCRIPTION
 
